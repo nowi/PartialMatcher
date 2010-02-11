@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://partialmatch.org/computer#"
+    xmlns:Desktop_or_computer="http://partialmatch.org/computer#computer:Desktop_or_computer:"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://partialmatch.org/computer">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Computer"/>
+  <owl:Class rdf:ID="Euro">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Currency"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Advert1">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="item"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:ID="price"/>
+                </owl:onProperty>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >3</owl:maxCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:ID="hasCacheMemory"/>
+                </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >2</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >2</owl:minCardinality>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:ID="hasMainMemory"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Class rdf:ID="Desktop"/>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Sales"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Request">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#item"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#hasMainMemory"/>
+                </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+                >5</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                  <owl:Class rdf:about="#Desktop"/>
+                  <owl:Class rdf:ID="Laptop"/>
+                </owl:unionOf>
+              </owl:Class>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#hasCacheMemory"/>
+                </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+                >2</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#price"/>
+                </owl:onProperty>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+                >4</owl:maxCardinality>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#Sales"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Advert2">
+    <rdfs:subClassOf rdf:resource="#Sales"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#item"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#hasMainMemory"/>
+                </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >5</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >2</owl:minCardinality>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#hasCacheMemory"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >6</owl:maxCardinality>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#price"/>
+                </owl:onProperty>
+              </owl:Restriction>
+              <owl:Class rdf:about="#Laptop"/>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Laptop">
+    <rdfs:subClassOf rdf:resource="#Computer"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Dollar">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Currency"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="MainMemory">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Memory"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CacheMemory">
+    <rdfs:subClassOf rdf:resource="#Memory"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Currency">
+    <owl:disjointWith rdf:resource="#Memory"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Desktop">
+    <rdfs:subClassOf rdf:resource="#Computer"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#hasMainMemory">
+    <rdfs:range rdf:resource="#MainMemory"/>
+    <rdfs:domain rdf:resource="#Computer"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#price">
+    <rdfs:domain rdf:resource="#Sales"/>
+    <rdfs:range rdf:resource="#Currency"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#item">
+    <rdfs:domain rdf:resource="#Sales"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#hasCacheMemory">
+    <rdfs:range rdf:resource="#CacheMemory"/>
+    <rdfs:domain rdf:resource="#Computer"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->
