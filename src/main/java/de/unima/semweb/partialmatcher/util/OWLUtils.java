@@ -10,15 +10,13 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.InferredAxiomGenerator;
-import org.semanticweb.owl.util.InferredSubClassAxiomGenerator;
-import org.semanticweb.owl.util.InferredOntologyGenerator;
-import org.semanticweb.owl.util.InferredAxiomGeneratorException;
+import org.semanticweb.owl.util.*;
 import org.mindswap.pellet.owlapi.Reasoner;
 import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -57,71 +55,6 @@ public class OWLUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
-    }
-
-
-    public static int determineHighestNumberInOWLClass(OWLObject obj, OWLOntology ontology) {
-        int max = 0;
-        // use Commons JXPath for quick object graph traversal
-        if (obj instanceof OWLClass) {
-            Set<OWLDescription> s = ((OWLClass) obj).getEquivalentClasses(ontology);
-            if (!s.isEmpty()) {
-                for (OWLDescription value : s) {
-                    JXPathContext context = JXPathContext.newContext(value);
-
-                    // register custom extension functions
-                    context.setFunctions(new ClassFunctions(MyJXPathExtenstionFunctions.class, "myext"));
-
-
-                    // find all  OWLObjectMaxCardinalityRestrictions
-                    Iterator<OWLCardinalityRestriction> restrictions = context.iterate("//.[myext:isOWLCardinalityRestriction()]");
-                    while (restrictions.hasNext()) {
-                        OWLCardinalityRestriction restriction = restrictions.next();
-                        if (restriction.getCardinality() >= max) max = restriction.getCardinality() + 1;
-
-                    }
-
-
-
-                    // find all  OWLObjectMaxCardinalityRestrictions
-//                    Iterator maxRestrictions = context.iterate("//.[myext:isOWLObjectMaxCardinalityRestriction()]");
-//                    while (maxRestrictions.hasNext()) {
-//                        OWLObjectMaxCardinalityRestriction maxR = (OWLObjectMaxCardinalityRestriction) maxRestrictions.next();
-//                        if (maxR.getCardinality() >= max) max = maxR.getCardinality() + 1;
-//
-//                    }
-//
-//                    // find all  OWLObjectMinCardinalityRestrictions
-//                    Iterator minRestrictions = context.iterate("//.[myext:isOWLObjectMinCardinalityRestriction()]");
-//                    while (minRestrictions.hasNext()) {
-//                        OWLObjectMinCardinalityRestriction minR = (OWLObjectMinCardinalityRestriction) minRestrictions.next();
-//                        if (minR.getCardinality() >= max) max = minR.getCardinality() + 1;
-//                    }
-//
-//
-//                    // find all  OWLObjectMaxCardinalityRestrictions
-//                    Iterator maxRestrictions = context.iterate("//.[myext:isOWLObjectMaxCardinalityRestriction()]");
-//                    while (maxRestrictions.hasNext()) {
-//                        OWLObjectMaxCardinalityRestriction maxR = (OWLObjectMaxCardinalityRestriction) maxRestrictions.next();
-//                        if (maxR.getCardinality() >= max) max = maxR.getCardinality() + 1;
-//
-//                    }
-//
-//                    // find all  OWLObjectMinCardinalityRestrictions
-//                    Iterator minRestrictions = context.iterate("//.[myext:isOWLObjectMinCardinalityRestriction()]");
-//                    while (minRestrictions.hasNext()) {
-//                        OWLObjectMinCardinalityRestriction minR = (OWLObjectMinCardinalityRestriction) minRestrictions.next();
-//                        if (minR.getCardinality() >= max) max = minR.getCardinality() + 1;
-//                    }
-
-
-                }
-            }
-        }
-
-        return max;
-
 
     }
 
@@ -259,7 +192,8 @@ public class OWLUtils {
             } else if (description instanceof OWLObjectComplementOf) {
                 OWLObjectComplementOf objectComplementOf = (OWLObjectComplementOf) description;
                 return 1 + nestingLevelRec(objectComplementOf.getOperand());
-            } else throw new IllegalArgumentException("Unknown OWLDescription type : " + description.getClass());
+            } else
+                throw new IllegalArgumentException("Unknown OWLDescription type : " + description.getClass());
         }
     }
 
@@ -369,7 +303,7 @@ public class OWLUtils {
 
 
     public static OWLOntologyManager createOntologyManager(String fileName) throws OWLOntologyCreationException {
-            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         // We load an ontology from a physical URI - in this case we'll load the pizza
         // ontology.
         URI physicalURI = URI.create(fileName);
@@ -388,16 +322,33 @@ public class OWLUtils {
     public static int determineHighestNumberInOntology(OWLOntology ontology) {
 // get all referenced OWLClasses in this Ontology
         int ontologyMaxQNR = 0;
+        MyOWLCardinalityMaxFunctionVisitor visitor = new MyOWLCardinalityMaxFunctionVisitor();
         for (OWLClass cls : ontology.getReferencedClasses()) {
-            int max = determineHighestNumberInOWLClass(cls, ontology);
-            if (max >= ontologyMaxQNR) ontologyMaxQNR = max;
+            Set<OWLDescription> s = ((OWLClass) cls).getEquivalentClasses(ontology);
+            if (!s.isEmpty()) {
+                for (OWLDescription owlDescription : s) {
+
+                    if (owlDescription instanceof OWLObjectSomeRestriction)
+                        visitor.visit((OWLObjectSomeRestriction) owlDescription);
+                    else if (owlDescription instanceof OWLObjectAllRestriction) {
+                        visitor.visit((OWLObjectAllRestriction) owlDescription);
+                    } else {
+                        throw new IllegalArgumentException("Unknown OWLDescription structure describing this catalog entityt");
+                    }
+
+                }
+            }
+
+
         }
+        // get the computed max
+        ontologyMaxQNR = visitor.getMax();
         return ontologyMaxQNR;
 
     }
 
 
-    public static OWLOntology getTaxonomyOntology(OWLOntologyManager owlOntologyManager, Reasoner reasoner,OWLOntology sourceOntology) {
+    public static OWLOntology getTaxonomyOntology(OWLOntologyManager owlOntologyManager, Reasoner reasoner, OWLOntology sourceOntology) {
         try {
 
             // To generate an inferred sourceOntology we use implementations of inferred axiom generators
@@ -423,7 +374,7 @@ public class OWLUtils {
             // Save the inferred sourceOntology. (Replace the URI with one that is appropriate for your setup)
             return infOnt;
 
-            }
+        }
         catch (InferredAxiomGeneratorException e) {
             e.printStackTrace();
         }
@@ -439,5 +390,121 @@ public class OWLUtils {
 
         return sourceOntology;
     }
+
+
+    private static class MyOWLCardinalityMaxFunctionVisitor extends OWLDescriptionVisitorAdapter {
+
+        static int max = 0;
+
+        static public int getMax() {
+            return max;
+        }
+
+        @Override
+        public void visit(OWLObjectSomeRestriction restriction) {
+            super.visit(restriction);
+            try {
+                DynDispatch.sendMessage("visit", this, restriction.getFiller());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        @Override
+        public void visit(OWLObjectAllRestriction restriction) {
+            super.visit(restriction);
+            // descend further down this owl structure visit filler
+            try {
+                DynDispatch.sendMessage("visit", this, restriction.getFiller());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        @Override
+        public void visit(OWLObjectMinCardinalityRestriction restriction) {
+            super.visit(restriction);
+            if (restriction.getCardinality() >= max)
+                max = restriction.getCardinality() + 1;
+            // descend further down this owl structure visit filler
+            try {
+                DynDispatch.sendMessage("visit", this, restriction.getFiller());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
+
+        }
+
+
+        @Override
+        public void visit(OWLObjectExactCardinalityRestriction restriction) {
+            super.visit(restriction);
+            if (restriction.getCardinality() >= max)
+                max = restriction.getCardinality() + 1;
+
+            try {
+                DynDispatch.sendMessage("visit", this, restriction.getFiller());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
+        }
+
+        @Override
+        public void visit(OWLObjectMaxCardinalityRestriction restriction) {
+            super.visit(restriction);
+            if (restriction.getCardinality() >= max)
+                max = restriction.getCardinality() + 1;
+            // descend further down this owl structure visit filler
+            try {
+                DynDispatch.sendMessage("visit", this, restriction.getFiller());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        @Override
+        public void visit(OWLObjectIntersectionOf owlObjectIntersectionOf) {
+            super.visit(owlObjectIntersectionOf);
+            // descend further down this owl structure visit filler
+
+            // descend further down this owl structure visit filler
+            for (OWLDescription operand : owlObjectIntersectionOf.getOperands()) {
+                try {
+                    DynDispatch.sendMessage("visit", this, operand);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+
+
+        }
+
+        @Override
+        public void visit(OWLObjectUnionOf owlObjectUnionOf) {
+            super.visit(owlObjectUnionOf);
+            // descend further down this owl structure visit filler
+            for (OWLDescription operand : owlObjectUnionOf.getOperands()) {
+                try {
+                    DynDispatch.sendMessage("visit", this, operand);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        }
+
+        @Override
+        public void visit(OWLObjectComplementOf owlObjectComplementOf) {
+            super.visit(owlObjectComplementOf);    //To change body of overridden methods use File | Settings | File Templates.
+            try {
+                DynDispatch.sendMessage("visit", this, owlObjectComplementOf.getOperand());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+    }
+
 
 }
