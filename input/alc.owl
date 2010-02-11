@@ -1,0 +1,176 @@
+Hallo Philipp,
+
+der Ontologie merkt man leider sehr an, dass sie automatisch aus einer anderen gebastelt wurde. Leider hab ich ausser dieser und dice kein alc beispiel gefunden. naja jetzt solltes gehen, hab einfach alle anderen namespaces rausgenommen.
+
+viele Grüße,
+Anne
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+ <!ENTITY foodswap "http://www.mindswap.org/dav/ontologies/commonsense/food/foodswap.owl">
+ <!ENTITY owl "http://www.w3.org/2002/07/owl#">
+ <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+ <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+]>
+<rdf:RDF xml:base="&foodswap;"
+        xmlns:owl="&owl;"
+        xmlns:rdf="&rdf;"
+        xmlns:rdfs="&rdfs;">
+
+<!-- Ontology Information -->
+ <owl:Ontology rdf:about=""
+               rdfs:label="FoodSwop Ontology"/>
+
+<!-- Classes -->
+ <owl:Class rdf:about="#Food"/>
+ <owl:Class rdf:about="#LactoVegetarian">
+   <rdfs:subClassOf rdf:resource="#Ovo-LactoVegetarian"/>
+   <rdfs:subClassOf>
+     <owl:Restriction>
+       <owl:allValuesFrom rdf:resource="#LactoVegetarianFood"/>
+       <owl:onProperty rdf:resource="#eats"/>
+     </owl:Restriction>
+   </rdfs:subClassOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#LactoVegetarianFood">
+   <rdfs:subClassOf rdf:resource="#VegetarianFood"/>
+   <owl:intersectionOf rdf:parseType="Collection">
+     <rdf:Description rdf:about="#Food"/>
+     <owl:Class>
+       <owl:complementOf>
+         <owl:Class>
+           <owl:unionOf rdf:parseType="Collection">
+             <rdf:Description rdf:about="#Meat"/>
+             <rdf:Description rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Eggs"/>
+           </owl:unionOf>
+         </owl:Class>
+       </owl:complementOf>
+     </owl:Class>
+   </owl:intersectionOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#Meat"
+            rdfs:label="Meat, including seafood">
+   <rdfs:subClassOf rdf:resource="#Food"/>
+   <owl:unionOf rdf:parseType="Collection">
+     <rdf:Description rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Meat"/>
+     <rdf:Description rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Seafood"/>
+   </owl:unionOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#Omnivore"/>
+ <owl:Class rdf:about="#Ovo-LactoVegetarian">
+   <rdfs:subClassOf rdf:resource="#Vegetarian"/>
+   <rdfs:subClassOf>
+     <owl:Restriction>
+       <owl:allValuesFrom rdf:resource="#OvoLactoVegetarianFood"/>
+       <owl:onProperty rdf:resource="#eats"/>
+     </owl:Restriction>
+   </rdfs:subClassOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#OvoLactoVegetarianFood">
+   <owl:equivalentClass rdf:resource="#VegetarianFood"/>
+ </owl:Class>
+
+ <owl:Class rdf:about="#OvoVegetarian">
+   <rdfs:subClassOf rdf:resource="#Ovo-LactoVegetarian"/>
+   <rdfs:subClassOf>
+     <owl:Restriction>
+       <owl:allValuesFrom rdf:resource="#OvoVegetarianFood"/>
+       <owl:onProperty rdf:resource="#eats"/>
+     </owl:Restriction>
+   </rdfs:subClassOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#OvoVegetarianFood">
+   <rdfs:subClassOf rdf:resource="#VegetarianFood"/>
+   <owl:intersectionOf rdf:parseType="Collection">
+     <rdf:Description rdf:about="#Food"/>
+     <owl:Class>
+       <owl:complementOf>
+         <owl:Class>
+           <owl:unionOf rdf:parseType="Collection">
+             <rdf:Description rdf:about="#Meat"/>
+             <rdf:Description rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Dairy"/>
+           </owl:unionOf>
+         </owl:Class>
+       </owl:complementOf>
+     </owl:Class>
+   </owl:intersectionOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#Vegan">
+   <rdfs:subClassOf rdf:resource="#Vegetarian"/>
+   <rdfs:subClassOf>
+     <owl:Restriction>
+       <owl:allValuesFrom rdf:resource="#VeganFood"/>
+       <owl:onProperty rdf:resource="#eats"/>
+     </owl:Restriction>
+   </rdfs:subClassOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#VeganFood">
+   <rdfs:subClassOf rdf:resource="#LactoVegetarianFood"/>
+   <rdfs:subClassOf rdf:resource="#OvoVegetarianFood"/>
+   <owl:intersectionOf rdf:parseType="Collection">
+     <rdf:Description rdf:about="#Food"/>
+     <owl:Class>
+       <owl:complementOf>
+         <owl:Class>
+           <owl:unionOf rdf:parseType="Collection">
+             <rdf:Description rdf:about="#Meat"/>
+             <rdf:Description rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Dairy-products-and-eggs"/>
+           </owl:unionOf>
+         </owl:Class>
+       </owl:complementOf>
+     </owl:Class>
+   </owl:intersectionOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#Vegetarian">
+   <rdfs:subClassOf rdf:resource="http://www.isi.edu/webscripter/person.o.daml#Person"/>
+   <rdfs:subClassOf rdf:resource="http://xmlns.com/foaf/0.1/#Person"/>
+   <rdfs:subClassOf rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+   <rdfs:subClassOf>
+     <owl:Restriction>
+       <owl:allValuesFrom rdf:resource="#VegetarianFood"/>
+       <owl:onProperty rdf:resource="#eats"/>
+     </owl:Restriction>
+   </rdfs:subClassOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="#VegetarianFood">
+   <rdfs:subClassOf rdf:resource="#Food"/>
+   <owl:intersectionOf rdf:parseType="Collection">
+     <rdf:Description rdf:about="#Food"/>
+     <owl:Class>
+       <owl:complementOf rdf:resource="#Meat"/>
+     </owl:Class>
+   </owl:intersectionOf>
+ </owl:Class>
+
+ <owl:Class rdf:about="http://www.isi.edu/webscripter/person.o.daml#Person"/>
+ <owl:Class rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Dairy"/>
+ <owl:Class rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Dairy-products-and-eggs"/>
+ <owl:Class rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Eggs"/>
+ <owl:Class rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Meat"/>
+ <owl:Class rdf:about="http://www.ksl.stanford.edu/projects/DAML/UNSPSC.daml#Seafood"/>
+ <owl:Class rdf:about="http://xmlns.com/foaf/0.1/#Person"/>
+ <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person"/>
+
+<!-- Annotation Properties -->
+ <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+
+<!-- Datatype Properties -->
+ <owl:DatatypeProperty rdf:about="&rdf;aboue"/>
+
+<!-- Object Properties -->
+ <owl:ObjectProperty rdf:about="#eats">
+   <rdfs:domain rdf:resource="#Vegetarian"/>
+ </owl:ObjectProperty>
+
+<!-- Instances -->
+ <owl:Thing rdf:aboue="#Meat"/>
+</rdf:RDF>
