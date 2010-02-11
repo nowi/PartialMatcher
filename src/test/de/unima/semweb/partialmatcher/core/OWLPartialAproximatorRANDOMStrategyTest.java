@@ -1,4 +1,4 @@
-package de.unima.semweb.partialmatcher.core;
+package test.de.unima.semweb.partialmatcher.core;
 
 /**
  * User: nowi
@@ -7,16 +7,39 @@ package de.unima.semweb.partialmatcher.core;
  */
 
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import de.unima.semweb.partialmatcher.core.ApproximationStrategy;
+import de.unima.semweb.partialmatcher.core.CTASetApproximationContext;
+import de.unima.semweb.partialmatcher.core.IOWLTermRewriter;
+import de.unima.semweb.partialmatcher.core.MatchingResult;
+import de.unima.semweb.partialmatcher.core.NotSApproximationContext;
+import de.unima.semweb.partialmatcher.core.OWLPartialApproximator;
+
+import org.junit.Before;
+import org.semanticweb.owl.inference.OWLReasoner;
+import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.model.OWLPropertyAxiom;
+
+import de.unima.semweb.partialmatcher.core.ApproximationContext;
 import de.unima.semweb.partialmatcher.core.rewriters.UpperLowerApproximatingTermRewriter;
 import de.unima.semweb.partialmatcher.core.strategies.RandomInclusionOfConcepts;
 import de.unima.semweb.partialmatcher.util.OWLUtils;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.model.*;
-import org.junit.Before;
-import static org.junit.Assert.*;
-import java.net.URI;
-import java.util.*;
 
 public class OWLPartialAproximatorRANDOMStrategyTest {
     private OWLOntologyManager manager;
