@@ -7,19 +7,14 @@ package de.unima.semweb.partialmatcher.core;
  */
 
 
-import de.unima.semweb.partialmatcher.core.*;
 import de.unima.semweb.partialmatcher.core.rewriters.UpperLowerApproximatingTermRewriter;
 import de.unima.semweb.partialmatcher.core.strategies.RandomInclusionOfConcepts;
 import de.unima.semweb.partialmatcher.util.OWLUtils;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.*;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.junit.Before;
-
+import static org.junit.Assert.*;
 import java.net.URI;
 import java.util.*;
 
