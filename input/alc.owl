@@ -1,9 +1,3 @@
-Hallo Philipp,
-
-der Ontologie merkt man leider sehr an, dass sie automatisch aus einer anderen gebastelt wurde. Leider hab ich ausser dieser und dice kein alc beispiel gefunden. naja jetzt solltes gehen, hab einfach alle anderen namespaces rausgenommen.
-
-viele Grüße,
-Anne
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf:RDF [
  <!ENTITY foodswap "http://www.mindswap.org/dav/ontologies/commonsense/food/foodswap.owl">
