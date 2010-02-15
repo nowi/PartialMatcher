@@ -54,32 +54,24 @@ import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
  */
 @SuppressWarnings( { "WeakerAccess" })
 public class OWLUtils {
-	public static final String OWLECLASSONTOLOGYPATH = "file:///Users/nowi/Documents/Hiwi/PartialMatcher/files/eclassOWL_51en/eclass_51en.owl";
 
-	public static final String COMPUTER_ONTOLOGY1 = new File(
-			"input/computer_final.owl").toURI().toString();
-	public static final String PIZZA = new File("input/pizza.owl").toURI()
-			.toString();
-	public static String COMPUTER_ONTOLOGY2 = new File(
-			"input/computer_final3.owl").toURI().toString();
-	public static String ALC_ONTOLOGY = new File("input/alc.owl").toURI()
-			.toString();
-	public static String FOODSWAP = new File("input/alc1.owl").toURI()
-			.toString();
-	// public static String FOODSWAP_PARTITIONED = new
-	// File("input/foodswap_partitioned.owl").toURI().toString();
-	// public static String FOODSWAP_PARTITIONEDDEF = new
-	// File("input/foodswapDefpartitioned.owl").toURI().toString();
+	public static final URI ALC_ONTOLOGY = new File("input/alc.owl").toURI();
+	public static final URI FOODSWAP = new File("input/alc1.owl").toURI();
+	public static final URI ALTERNATE = new File("input/alternate.owl").toURI();
+	public static final URI COMPUTER_ONTOLOGY1 = new File("input/computer_final.owl").toURI();
+	public static final URI COMPUTER_ONTOLOGY2 = new File("input/computer_final3.owl").toURI();
+	public static final URI PIZZA = new File("input/pizza.owl").toURI();
+	public static final URI DICE_ONTOLOGY = new File("input/dice.owl").toURI();
 
-	public static String DICE_ONTOLOGY = new File("input/dice.owl").toURI()
-			.toString();
-	// public static String DICE_NODOMAIN_ONTOLOGY = new
-	// File("input/dice_ded_no-domain.owl").toURI().toString();
-
-	// public static String PEPPERLECLASSOWL = new
-	// File("input/eclass_51en.owl").toURI().toString();
-	// public static String PEPPERLECLASSOWLSTRIPPED = new
-	// File("input/pepperlstripped.owl").toURI().toString();
+	// these OWL files are missing
+	public static final URI FOODSWAP_PARTITIONED = new File("input/foodswap_partitioned.owl").toURI();
+	public static final URI FOODSWAP_PARTITIONEDDEF = new File("input/foodswapDefpartitioned.owl")
+			.toURI();
+	public static final URI DICE_NODOMAIN_ONTOLOGY = new File("input/dice_ded_no-domain.owl").toURI();
+	public static final URI OWLECLASSONTOLOGYPATH = new File("input/eclassOWL_51en/eclass_51en.owl")
+			.toURI();
+	public static final URI PEPPERLECLASSOWL = new File("input/eclass_51en.owl").toURI();
+	public static final URI PEPPERLECLASSOWLSTRIPPED = new File("input/pepperlstripped.owl").toURI();
 
 	public static URL DIGURL;
 
@@ -285,7 +277,7 @@ public class OWLUtils {
 				return isNested((OWLDescription) o);
 			}
 		};
-		return (Iterator<OWLDescription>) new FilterIterator(iterator,
+		return new FilterIterator(iterator,
 				isComplex);
 
 	}
@@ -360,15 +352,12 @@ public class OWLUtils {
 		return Arrays.<OWLAxiomChange> asList(removeAxiom, addAxiom);
 	}
 
-	public static OWLOntologyManager createOntologyManager(String fileName)
+	// We load an ontology from a physical URI
+	public static OWLOntologyManager createOntologyManager(URI ontologyPhysicalUri)
 			throws OWLOntologyCreationException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		// We load an ontology from a physical URI - in this case we'll load the
-		// pizza
-		// ontology.
-		URI physicalURI = URI.create(fileName);
 		// Now getAllMatches the manager to load the ontology
-		manager.loadOntologyFromPhysicalURI(physicalURI);
+		manager.loadOntologyFromPhysicalURI(ontologyPhysicalUri);
 		return manager;
 	}
 
@@ -376,7 +365,7 @@ public class OWLUtils {
 	 * Determines the Highest Number in Ontology and saves it to the internal
 	 * attribute "max" In bigger Ontologies, this may take some time. You should
 	 * call this method before approximating!
-	 * 
+	 *
 	 * @param ontology
 	 *            -- The ontology for which the highest number in any ONR is
 	 *            determined
@@ -387,7 +376,7 @@ public class OWLUtils {
 		int ontologyMaxQNR = 0;
 		MyOWLCardinalityMaxFunctionVisitor visitor = new MyOWLCardinalityMaxFunctionVisitor();
 		for (OWLClass cls : ontology.getReferencedClasses()) {
-			Set<OWLDescription> s = ((OWLClass) cls)
+			Set<OWLDescription> s = (cls)
 					.getEquivalentClasses(ontology);
 			if (!s.isEmpty()) {
 				for (OWLDescription owlDescription : s) {
