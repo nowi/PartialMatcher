@@ -46,6 +46,8 @@ import org.semanticweb.owl.util.InferredAxiomGeneratorException;
 import org.semanticweb.owl.util.InferredOntologyGenerator;
 import org.semanticweb.owl.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owl.util.OWLDescriptionVisitorAdapter;
+import org.semanticweb.owl.util.OWLOntologyWalker;
+import org.semanticweb.owl.util.OWLOntologyWalkerVisitor;
 
 import uk.ac.manchester.cs.owl.inference.dig11.DIGReasoner;
 
@@ -585,4 +587,45 @@ public class OWLUtils {
 
 	}
 
+	public static int determineHighestNumberInOntologyWalker(OWLOntology ontology) {
+		OWLOntologyWalker walker = new OWLOntologyWalker(Collections.singleton(ontology));
+
+		MyOWLOntologyWalkerVisitor visitor = new MyOWLOntologyWalkerVisitor(walker);
+
+		// Now ask the walker to walk over the ontology structure using our visitor instance.
+		walker.walkStructure(visitor);
+
+		return visitor.getOntologyMaxQNR();
+	}
+
+	public static class MyOWLOntologyWalkerVisitor extends OWLOntologyWalkerVisitor<Object> {
+
+		private int ontologyMaxQNR = 0;
+
+		public MyOWLOntologyWalkerVisitor(OWLOntologyWalker walker) {
+			super(walker);
+		}
+
+		@Override
+		public Object visit(OWLObjectMinCardinalityRestriction restriction) {
+			ontologyMaxQNR = Math.max(ontologyMaxQNR, restriction.getCardinality());
+			return null;
+		}
+
+		@Override
+		public Object visit(OWLObjectExactCardinalityRestriction restriction) {
+			ontologyMaxQNR = Math.max(ontologyMaxQNR, restriction.getCardinality());
+			return null;
+		}
+
+		@Override
+		public Object visit(OWLObjectMaxCardinalityRestriction restriction) {
+			ontologyMaxQNR = Math.max(ontologyMaxQNR, restriction.getCardinality());
+			return null;
+		}
+
+		public int getOntologyMaxQNR() {
+			return ontologyMaxQNR + 1;
+		}
+	}
 }
